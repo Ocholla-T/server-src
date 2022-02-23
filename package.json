@@ -1,0 +1,22 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": "v16.13.2"
+  },
+  "description": "server for e-commerce platform",
+  "main": "app.js",
+  "author": "ochollat",
+  "license": "MIT",
+  "scripts": {
+    "serve": "nodemon app.js"
+  },
+  "dependencies": {
+    "express": "^4.17.3",
+    "mongoose": "^6.2.3"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
