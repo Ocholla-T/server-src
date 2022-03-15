@@ -1,25 +1,56 @@
 import User from '../models/user.js';
 import bcrypt from 'bcryptjs';
 
+/**
+ *
+ * @param {object} user
+ * @param {string} user.username
+ * @param {string} user.password
+ * @returns {Promise<object>}
+ */
+
 export async function createUser({ username, password }) {
-  return await User.findOne({ username })
+  const resultingMessage = {
+    message: '',
+  };
+
+  await User.findOne({ username })
     .then((foundUser) => {
-      if (foundUser) return { message: `Email already in use` };
+      /**
+       * if user is found don't create a new user
+       */
 
-      try {
-        bcrypt.hash(password, 10, async (error, hashedPassword) => {
-          if (error) throw error;
+      if (foundUser) {
+        resultingMessage.message = `Email already in use`;
 
-          const newUser = new User({ username, password: hashedPassword });
-          await newUser.save();
-
-          return newUser._id;
-        });
-      } catch (error) {
-        throw error;
+        return;
       }
+      const newUser = new User({ username, password });
+
+      /**
+       * salt and hash password using bcrypt
+       */
+
+      bcrypt.genSalt(10, (error, salt) => {
+        if (error) {
+          console.error(error);
+          return;
+        }
+        bcrypt.hash(newUser.password, salt, (error, hash) => {
+          if (error) {
+            console.error(error);
+            return;
+          }
+          newUser.password = hash;
+          newUser.save();
+        });
+      });
+
+      resultingMessage.message = `Account has been successfully created`;
     })
     .catch((error) => {
-      throw error;
+      console.error(error);
     });
+
+  return resultingMessage;
 }
