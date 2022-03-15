@@ -1,9 +1,8 @@
 import 'dotenv/config';
 import express from 'express';
-import session from 'express-session';
-import MongoStore from 'connect-mongo';
 import cors from 'cors';
-import getRoutes from './routes/index.js';
+import session from 'express-session';
+import getRoutes from './routes/user.js';
 import './config/database.js';
 
 const app = express();
@@ -14,7 +13,7 @@ app.use(
   }),
 );
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 
 /**
  * session config
@@ -23,9 +22,8 @@ app.use(
   session({
     name: process.env.SESSION_NAME,
     secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-    // store: MongoStore.create({mongoUrl: }),
+    resave: true,
+    saveUninitialized: true,
     cookie: {
       maxAge: Number(process.env.SESSION_LIFETIME),
       sameSite: true,
@@ -33,6 +31,6 @@ app.use(
   }),
 );
 
-app.use('/api', getRoutes);
+app.use('/api/v1', getRoutes);
 
 app.listen(process.env.PORT, () => console.log(`server is running on port ${process.env.PORT}`));
